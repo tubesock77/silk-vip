@@ -194,6 +194,18 @@ app.get('/admin/export.csv', requireAdmin, async (req, res) => {
 
 app.use((req, res) => res.redirect('/'));
 
-initDb()
+// Retry DB connection (a fresh Render database can take a minute to accept connections)
+async function initDbWithRetry(attempts = 20, delayMs = 5000) {
+  for (let i = 1; i <= attempts; i++) {
+    try { await initDb(); return; }
+    catch (e) {
+      console.warn(`DB not ready (attempt ${i}/${attempts}): ${e.code || e.message}`);
+      if (i === attempts) throw e;
+      await new Promise(r => setTimeout(r, delayMs));
+    }
+  }
+}
+
+initDbWithRetry()
   .then(() => app.listen(PORT, () => console.log(`Silk VIP running on :${PORT}`)))
   .catch(e => { console.error('DB init failed', e); process.exit(1); });
