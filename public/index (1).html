@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Join the Silk VIP List · Silk Head Spa</title>
+<meta name="description" content="Be the first to know when Silk Head Spa opens in Riverton, Utah. Join the Silk VIP List.">
+<meta name="theme-color" content="#f6f1ea">
+<meta property="og:title" content="Join the Silk VIP List">
+<meta property="og:description" content="Be the first to know when Silk Head Spa opens in Riverton, Utah.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f1ea; --card:#fffdfa; --ink:#2a2421; --muted:#7a6f68;
+    --accent:#a8875a; --accent-dark:#8a6d45; --line:#e6ddd2; --err:#b3412f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{
+    font-family:'Jost',system-ui,-apple-system,sans-serif;font-weight:400;
+    background:var(--bg);color:var(--ink);
+    background-image:radial-gradient(ellipse at top, #fbf7f1 0%, var(--bg) 60%);
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:max(28px, env(safe-area-inset-top)) 18px max(28px, env(safe-area-inset-bottom));
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{width:100%;max-width:440px}
+  header{text-align:center;margin:8px 0 22px}
+  .brand{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:15px;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-dark)}
+  .rule{width:42px;height:1px;background:var(--accent);margin:14px auto}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(34px,9vw,42px);line-height:1.05;letter-spacing:-.01em}
+  h1 em{font-style:italic;color:var(--accent-dark)}
+  .sub{margin-top:12px;color:var(--muted);font-weight:300;font-size:16px;line-height:1.5}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 18px 20px;box-shadow:0 10px 30px -18px rgba(60,40,20,.25)}
+  .row{display:flex;gap:12px}
+  .row .field{flex:1;min-width:0}
+  .field{margin-bottom:14px}
+  label{display:block;font-size:13px;font-weight:500;letter-spacing:.04em;margin-bottom:6px;color:var(--ink)}
+  input[type=text],input[type=tel],input[type=email],textarea{
+    width:100%;font:inherit;font-size:17px;color:var(--ink);
+    padding:14px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;
+    -webkit-appearance:none;appearance:none;transition:border-color .15s, box-shadow .15s;
+  }
+  input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(168,135,90,.18)}
+  .invalid input{border-color:var(--err)}
+  .msg{display:none;color:var(--err);font-size:13px;margin-top:5px}
+  .invalid .msg{display:block}
+  textarea{resize:vertical;min-height:84px;line-height:1.4}
+  .opt{font-weight:400;color:var(--muted);letter-spacing:0}
+  .consent{margin:12px 2px 0;font-size:12px;color:var(--muted);line-height:1.45;text-align:center}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  button{
+    width:100%;font:inherit;font-size:17px;font-weight:500;letter-spacing:.06em;
+    padding:16px;border:0;border-radius:999px;color:#fff;background:var(--ink);
+    cursor:pointer;transition:transform .1s, background .15s;min-height:54px;
+  }
+  button:active{transform:scale(.985)}
+  button:disabled{opacity:.6}
+  .formerr{display:none;color:var(--err);font-size:14px;text-align:center;margin-top:12px}
+  .done{display:none;text-align:center;padding:16px 4px 8px}
+  .done .check{width:58px;height:58px;border-radius:50%;margin:0 auto 14px;display:grid;place-items:center;background:#f2ebe1;color:var(--accent-dark);font-size:28px}
+  .done h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:32px;margin-bottom:8px}
+  .done p{color:var(--muted);font-weight:300;line-height:1.5}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:20px;line-height:1.6;font-weight:300}
+  footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <div class="brand">Silk Head Spa</div>
+    <div class="rule"></div>
+    <h1>Join the <em>Silk VIP</em> List</h1>
+    <p class="sub">Be the first to know when we open, and get early access to opening specials.</p>
+  </header>
+
+  <section class="card">
+    <form id="f" novalidate>
+      <div class="row">
+        <div class="field" data-f="firstName">
+          <label for="firstName">First Name</label>
+          <input id="firstName" name="firstName" type="text" autocomplete="given-name" autocapitalize="words" required>
+          <div class="msg">Required</div>
+        </div>
+        <div class="field" data-f="lastName">
+          <label for="lastName">Last Name</label>
+          <input id="lastName" name="lastName" type="text" autocomplete="family-name" autocapitalize="words" required>
+          <div class="msg">Required</div>
+        </div>
+      </div>
+      <div class="field" data-f="phone">
+        <label for="phone">Mobile Phone</label>
+        <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(801) 555-0123" required>
+        <div class="msg">Please enter a 10-digit phone number</div>
+      </div>
+      <div class="field" data-f="email">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="you@example.com" required>
+        <div class="msg">Please enter a valid email</div>
+      </div>
+      <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
+      <div class="field" data-f="comments">
+        <label for="comments">Comment: <span class="opt">(optional)</span></label>
+        <textarea id="comments" name="comments" rows="3" maxlength="500" placeholder="Services you're excited about, questions, ideas…"></textarea>
+      </div>
+      <button type="submit" id="btn">Join the VIP List</button>
+      <p class="consent">By joining, you agree to receive Silk Head Spa opening news and offers by text and email. Msg &amp; data rates may apply. Reply STOP to opt out anytime.</p>
+      <div class="formerr" id="formerr"></div>
+    </form>
+
+    <div class="done" id="done">
+      <div class="check">✓</div>
+      <h2 id="doneTitle">You're on the list!</h2>
+      <p id="doneText">We'll let you know the moment our doors open. We can't wait to pamper you.</p>
+    </div>
+  </section>
+
+  <footer>
+    Silk Head Spa · Riverton, Utah<br>
+    <a href="https://silkheadspa.com">silkheadspa.com</a>
+  </footer>
+</main>
+
+<script>
+  const f = document.getElementById('f');
+  const btn = document.getElementById('btn');
+  const formerr = document.getElementById('formerr');
+  const phone = document.getElementById('phone');
+  const src = new URLSearchParams(location.search).get('src') || new URLSearchParams(location.search).get('utm_source') || '';
+
+  // live phone formatting
+  phone.addEventListener('input', () => {
+    let d = phone.value.replace(/\D/g, '');
+    if (d.length === 11 && d[0] === '1') d = d.slice(1);
+    d = d.slice(0, 10);
+    let out = d;
+    if (d.length > 6) out = `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+    else if (d.length > 3) out = `(${d.slice(0,3)}) ${d.slice(3)}`;
+    else if (d.length > 0) out = `(${d}`;
+    phone.value = out;
+  });
+
+  f.querySelectorAll('input,textarea').forEach(i => i.addEventListener('input', () => {
+    const w = i.closest('[data-f]'); if (w) w.classList.remove('invalid');
+  }));
+
+  function validate(data) {
+    const e = {};
+    if (!data.firstName.trim()) e.firstName = 1;
+    if (!data.lastName.trim()) e.lastName = 1;
+    const d = data.phone.replace(/\D/g, '');
+    if (!(d.length === 10 || (d.length === 11 && d[0] === '1'))) e.phone = 1;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email.trim())) e.email = 1;
+    return e;
+  }
+  function mark(errors) {
+    f.querySelectorAll('[data-f]').forEach(w => w.classList.toggle('invalid', !!errors[w.dataset.f]));
+    const first = f.querySelector('.invalid input');
+    if (first) first.focus();
+  }
+
+  f.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    formerr.style.display = 'none';
+    const data = {
+      firstName: f.firstName.value, lastName: f.lastName.value,
+      phone: f.phone.value, email: f.email.value,
+      comments: f.comments.value, consent: true, website: f.website.value, source: src
+    };
+    const errs = validate(data);
+    if (Object.keys(errs).length) { mark(errs); return; }
+
+    btn.disabled = true; btn.textContent = 'Joining…';
+    try {
+      const r = await fetch('/api/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        if (j.errors) mark(j.errors);
+        throw new Error(j.error || 'Something went wrong. Please try again.');
+      }
+      const name = (j.firstName || data.firstName).trim();
+      document.getElementById('doneTitle').textContent = j.returning ? `Welcome back, ${name}!` : `You're on the list, ${name}!`;
+      if (j.returning) document.getElementById('doneText').textContent = "You're already a Silk VIP. We've updated your info and we'll be in touch as soon as we open.";
+      f.style.display = 'none';
+      document.getElementById('done').style.display = 'block';
+    } catch (e) {
+      formerr.textContent = e.message; formerr.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Join the VIP List';
+    }
+  });
+</script>
+</body>
+</html>
