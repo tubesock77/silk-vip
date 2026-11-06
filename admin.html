@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>VIP List · Silk Head Spa Admin</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,sans-serif;background:#f6f1ea;color:#2a2421;padding:18px 14px 40px}
+  .wrap{max-width:1000px;margin:0 auto}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  h1{font-size:22px;font-weight:600}
+  .actions{display:flex;gap:8px}
+  .btn{font-size:14px;font-weight:500;padding:10px 14px;border-radius:999px;border:1px solid #2a2421;background:#2a2421;color:#fff;text-decoration:none;cursor:pointer}
+  .btn.ghost{background:transparent;color:#2a2421}
+  .stats{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .stat{background:#fffdfa;border:1px solid #e6ddd2;border-radius:12px;padding:12px 16px;flex:1;min-width:130px}
+  .stat b{display:block;font-size:26px;font-weight:600}
+  .stat span{font-size:12px;color:#7a6f68;text-transform:uppercase;letter-spacing:.06em}
+  input.search{width:100%;font-size:16px;padding:12px;border:1px solid #e6ddd2;border-radius:10px;margin-bottom:12px;background:#fff}
+  table{width:100%;border-collapse:collapse;background:#fffdfa;border:1px solid #e6ddd2;border-radius:12px;overflow:hidden;font-size:14px}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid #efe8de}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#7a6f68;background:#faf6f0}
+  tr:last-child td{border-bottom:0}
+  td a{color:#8a6d45;text-decoration:none}
+  .del{background:none;border:0;color:#b3412f;cursor:pointer;font-size:13px}
+  .muted{color:#7a6f68}
+  .cmt{max-width:260px;white-space:pre-wrap;word-break:break-word}
+  .empty{text-align:center;padding:30px;color:#7a6f68}
+  @media (max-width:700px){
+    table,thead,tbody,tr,td{display:block}
+    thead{display:none}
+    table{border:0;background:none}
+    tr{background:#fffdfa;border:1px solid #e6ddd2;border-radius:12px;margin-bottom:10px;padding:8px 4px}
+    td{border:0;padding:4px 12px}
+    td.name{font-weight:600;font-size:16px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>Silk VIP List</h1>
+    <div class="actions">
+      <a class="btn" href="/admin/export.csv">Download CSV</a>
+      <form method="post" action="/admin/logout"><button class="btn ghost">Log out</button></form>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b id="sTotal">–</b><span>Total VIPs</span></div>
+    <div class="stat"><b id="sToday">–</b><span>Last 24 hrs</span></div>
+    <div class="stat"><b id="sWeek">–</b><span>Last 7 days</span></div>
+  </div>
+  <input class="search" id="q" placeholder="Search name, phone, email, or comments…" autocomplete="off">
+  <table>
+    <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Source</th><th>Comments</th><th>Signed up</th><th></th></tr></thead>
+    <tbody id="rows"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody>
+  </table>
+</div>
+<script>
+  let all = [];
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmt = d => new Date(d).toLocaleString([], { month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit' });
+
+  async function load() {
+    const r = await fetch('/admin/api/signups');
+    if (r.status === 401) return location.href = '/admin/login';
+    all = await r.json();
+    const now = Date.now();
+    document.getElementById('sTotal').textContent = all.length;
+    document.getElementById('sToday').textContent = all.filter(x => now - new Date(x.created_at) < 864e5).length;
+    document.getElementById('sWeek').textContent = all.filter(x => now - new Date(x.created_at) < 7 * 864e5).length;
+    render();
+  }
+  function render() {
+    const q = document.getElementById('q').value.toLowerCase().trim();
+    const qd = q.replace(/\D/g, '');
+    const list = all.filter(x => !q ||
+      `${x.first_name} ${x.last_name} ${x.email} ${x.comments || ''}`.toLowerCase().includes(q) ||
+      (qd && x.phone.replace(/\D/g, '').includes(qd)));
+    const tb = document.getElementById('rows');
+    if (!list.length) { tb.innerHTML = `<tr><td colspan="7" class="empty">${all.length ? 'No matches' : 'No signups yet'}</td></tr>`; return; }
+    tb.innerHTML = list.map(x => `
+      <tr>
+        <td class="name">${esc(x.first_name)} ${esc(x.last_name)}</td>
+        <td><a href="tel:${esc(x.phone.replace(/\D/g,''))}">${esc(x.phone)}</a></td>
+        <td><a href="mailto:${esc(x.email)}">${esc(x.email)}</a></td>
+        <td class="muted">${esc(x.source || '—')}</td>
+        <td class="cmt">${x.comments ? esc(x.comments) : '<span class="muted">—</span>'}</td>
+        <td class="muted">${fmt(x.created_at)}</td>
+        <td><button class="del" data-id="${x.id}" data-n="${esc(x.first_name)} ${esc(x.last_name)}">Remove</button></td>
+      </tr>`).join('');
+  }
+  document.getElementById('q').addEventListener('input', render);
+  document.getElementById('rows').addEventListener('click', async e => {
+    const b = e.target.closest('.del'); if (!b) return;
+    if (!confirm(`Remove ${b.dataset.n} from the VIP list?`)) return;
+    await fetch('/admin/api/signups/' + b.dataset.id, { method: 'DELETE' });
+    load();
+  });
+  load();
+</script>
+</body>
+</html>

@@ -32,6 +32,7 @@ async function initDb() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )`);
+  await pool.query('ALTER TABLE vip_signups ADD COLUMN IF NOT EXISTS comments TEXT');
 }
 
 const app = express();
@@ -116,7 +117,8 @@ app.post('/api/signup', async (req, res) => {
     const last = clean(b.lastName, 60);
     const email = clean(b.email, 120).toLowerCase();
     const phone = normPhone(b.phone);
-    const consent = b.consent === true || b.consent === 'on' || b.consent === 'true';
+    const consent = true; // agreement is by submitting (disclosure shown under the button)
+    const comments = String(b.comments || '').trim().slice(0, 500) || null;
     const source = clean(b.source, 60) || null;
 
     const errors = {};
@@ -124,17 +126,17 @@ app.post('/api/signup', async (req, res) => {
     if (!last) errors.lastName = 'Please enter your last name';
     if (!phone) errors.phone = 'Please enter a 10-digit phone number';
     if (!EMAIL_RE.test(email)) errors.email = 'Please enter a valid email';
-    if (!consent) errors.consent = 'Please check the box to join the list';
     if (Object.keys(errors).length) return res.status(400).json({ error: 'Please fix the highlighted fields.', errors });
 
     const r = await pool.query(
-      `INSERT INTO vip_signups (first_name, last_name, phone, email, consent, source)
-       VALUES ($1,$2,$3,$4,$5,$6)
+      `INSERT INTO vip_signups (first_name, last_name, phone, email, consent, source, comments)
+       VALUES ($1,$2,$3,$4,$5,$6,$7)
        ON CONFLICT (email) DO UPDATE SET
          first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name,
-         phone = EXCLUDED.phone, consent = EXCLUDED.consent, updated_at = NOW()
+         phone = EXCLUDED.phone, consent = EXCLUDED.consent,
+         comments = COALESCE(EXCLUDED.comments, vip_signups.comments), updated_at = NOW()
        RETURNING (xmax = 0) AS inserted`,
-      [first, last, phone, email, consent, source]
+      [first, last, phone, email, consent, source, comments]
     );
     res.json({ ok: true, returning: !r.rows[0].inserted, firstName: first });
   } catch (e) {
@@ -165,7 +167,7 @@ app.get('/admin', requireAdmin, (req, res) => res.sendFile(path.join(pub, 'admin
 
 app.get('/admin/api/signups', requireAdmin, async (req, res) => {
   const r = await pool.query(
-    `SELECT id, first_name, last_name, phone, email, consent, source, created_at
+    `SELECT id, first_name, last_name, phone, email, consent, source, comments, created_at
      FROM vip_signups ORDER BY created_at DESC`);
   res.json(r.rows);
 });
@@ -177,15 +179,15 @@ app.delete('/admin/api/signups/:id', requireAdmin, async (req, res) => {
 
 app.get('/admin/export.csv', requireAdmin, async (req, res) => {
   const r = await pool.query(
-    `SELECT first_name, last_name, phone, email, consent, source, created_at
+    `SELECT first_name, last_name, phone, email, consent, source, comments, created_at
      FROM vip_signups ORDER BY created_at ASC`);
   const esc = v => {
     let s = v instanceof Date ? v.toISOString() : String(v ?? '');
     if (/^[=+\-@]/.test(s)) s = "'" + s; // prevent spreadsheet formula injection
-    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
-  const rows = [['First Name', 'Last Name', 'Phone', 'Email', 'Opted In', 'Source', 'Signed Up (UTC)']]
-    .concat(r.rows.map(x => [x.first_name, x.last_name, x.phone, x.email, x.consent ? 'Yes' : 'No', x.source, x.created_at]));
+  const rows = [['First Name', 'Last Name', 'Phone', 'Email', 'Opted In', 'Source', 'Comments', 'Signed Up (UTC)']]
+    .concat(r.rows.map(x => [x.first_name, x.last_name, x.phone, x.email, x.consent ? 'Yes' : 'No', x.source, x.comments, x.created_at]));
   const stamp = new Date().toISOString().slice(0, 10);
   res.set('Content-Type', 'text/csv; charset=utf-8');
   res.set('Content-Disposition', `attachment; filename="silk-vip-list-${stamp}.csv"`);
