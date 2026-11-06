@@ -38,7 +38,7 @@
   .row .field{flex:1;min-width:0}
   .field{margin-bottom:14px}
   label{display:block;font-size:13px;font-weight:500;letter-spacing:.04em;margin-bottom:6px;color:var(--ink)}
-  input[type=text],input[type=tel],input[type=email]{
+  input[type=text],input[type=tel],input[type=email],textarea{
     width:100%;font:inherit;font-size:17px;color:var(--ink);
     padding:14px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;
     -webkit-appearance:none;appearance:none;transition:border-color .15s, box-shadow .15s;
@@ -47,9 +47,9 @@
   .invalid input{border-color:var(--err)}
   .msg{display:none;color:var(--err);font-size:13px;margin-top:5px}
   .invalid .msg{display:block}
-  .consent{display:flex;gap:10px;align-items:flex-start;margin:6px 0 16px;font-size:13px;color:var(--muted);line-height:1.45;cursor:pointer}
-  .consent input{width:20px;height:20px;margin-top:1px;flex:none;accent-color:var(--accent-dark)}
-  .consent.invalid span{color:var(--err)}
+  textarea{resize:vertical;min-height:84px;line-height:1.4}
+  .opt{font-weight:400;color:var(--muted);letter-spacing:0}
+  .consent{margin:12px 2px 0;font-size:12px;color:var(--muted);line-height:1.45;text-align:center}
   .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
   button{
     width:100%;font:inherit;font-size:17px;font-weight:500;letter-spacing:.06em;
@@ -101,11 +101,12 @@
         <div class="msg">Please enter a valid email</div>
       </div>
       <div class="hp" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
-      <label class="consent" data-f="consent">
-        <input type="checkbox" name="consent" id="consent">
-        <span>Yes, send me Silk Head Spa opening news and offers by text and email. Msg &amp; data rates may apply. Reply STOP to opt out anytime.</span>
-      </label>
+      <div class="field" data-f="comments">
+        <label for="comments">Anything you'd like us to know? <span class="opt">(optional)</span></label>
+        <textarea id="comments" name="comments" rows="3" maxlength="500" placeholder="Services you're excited about, questions, ideas…"></textarea>
+      </div>
       <button type="submit" id="btn">Join the VIP List</button>
+      <p class="consent">By joining, you agree to receive Silk Head Spa opening news and offers by text and email. Msg &amp; data rates may apply. Reply STOP to opt out anytime.</p>
       <div class="formerr" id="formerr"></div>
     </form>
 
@@ -141,7 +142,7 @@
     phone.value = out;
   });
 
-  f.querySelectorAll('input').forEach(i => i.addEventListener('input', () => {
+  f.querySelectorAll('input,textarea').forEach(i => i.addEventListener('input', () => {
     const w = i.closest('[data-f]'); if (w) w.classList.remove('invalid');
   }));
 
@@ -152,7 +153,6 @@
     const d = data.phone.replace(/\D/g, '');
     if (!(d.length === 10 || (d.length === 11 && d[0] === '1'))) e.phone = 1;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email.trim())) e.email = 1;
-    if (!data.consent) e.consent = 1;
     return e;
   }
   function mark(errors) {
@@ -167,10 +167,10 @@
     const data = {
       firstName: f.firstName.value, lastName: f.lastName.value,
       phone: f.phone.value, email: f.email.value,
-      consent: f.consent.checked, website: f.website.value, source: src
+      comments: f.comments.value, consent: true, website: f.website.value, source: src
     };
     const errs = validate(data);
-    if (Object.keys(errs).length) { mark(errs); if (errs.consent && Object.keys(errs).length === 1) { formerr.textContent = 'Please check the box to join the list.'; formerr.style.display = 'block'; } return; }
+    if (Object.keys(errs).length) { mark(errs); return; }
 
     btn.disabled = true; btn.textContent = 'Joining…';
     try {

@@ -26,6 +26,7 @@
   td a{color:#8a6d45;text-decoration:none}
   .del{background:none;border:0;color:#b3412f;cursor:pointer;font-size:13px}
   .muted{color:#7a6f68}
+  .cmt{max-width:260px;white-space:pre-wrap;word-break:break-word}
   .empty{text-align:center;padding:30px;color:#7a6f68}
   @media (max-width:700px){
     table,thead,tbody,tr,td{display:block}
@@ -51,10 +52,10 @@
     <div class="stat"><b id="sToday">–</b><span>Last 24 hrs</span></div>
     <div class="stat"><b id="sWeek">–</b><span>Last 7 days</span></div>
   </div>
-  <input class="search" id="q" placeholder="Search name, phone, or email…" autocomplete="off">
+  <input class="search" id="q" placeholder="Search name, phone, email, or comments…" autocomplete="off">
   <table>
-    <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Source</th><th>Signed up</th><th></th></tr></thead>
-    <tbody id="rows"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+    <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Source</th><th>Comments</th><th>Signed up</th><th></th></tr></thead>
+    <tbody id="rows"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody>
   </table>
 </div>
 <script>
@@ -76,16 +77,17 @@
     const q = document.getElementById('q').value.toLowerCase().trim();
     const qd = q.replace(/\D/g, '');
     const list = all.filter(x => !q ||
-      `${x.first_name} ${x.last_name} ${x.email}`.toLowerCase().includes(q) ||
+      `${x.first_name} ${x.last_name} ${x.email} ${x.comments || ''}`.toLowerCase().includes(q) ||
       (qd && x.phone.replace(/\D/g, '').includes(qd)));
     const tb = document.getElementById('rows');
-    if (!list.length) { tb.innerHTML = `<tr><td colspan="6" class="empty">${all.length ? 'No matches' : 'No signups yet'}</td></tr>`; return; }
+    if (!list.length) { tb.innerHTML = `<tr><td colspan="7" class="empty">${all.length ? 'No matches' : 'No signups yet'}</td></tr>`; return; }
     tb.innerHTML = list.map(x => `
       <tr>
         <td class="name">${esc(x.first_name)} ${esc(x.last_name)}</td>
         <td><a href="tel:${esc(x.phone.replace(/\D/g,''))}">${esc(x.phone)}</a></td>
         <td><a href="mailto:${esc(x.email)}">${esc(x.email)}</a></td>
         <td class="muted">${esc(x.source || '—')}</td>
+        <td class="cmt">${x.comments ? esc(x.comments) : '<span class="muted">—</span>'}</td>
         <td class="muted">${fmt(x.created_at)}</td>
         <td><button class="del" data-id="${x.id}" data-n="${esc(x.first_name)} ${esc(x.last_name)}">Remove</button></td>
       </tr>`).join('');
